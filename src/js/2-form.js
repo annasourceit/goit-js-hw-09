@@ -67,6 +67,7 @@ form.addEventListener('submit', (event) => {
         console.log(formState);
         localStorage.removeItem('feedback-form-state');
         form.reset();
+        formState = { email: "", message: "" };
     } else {
         alert('Fill please all fields');
     }
