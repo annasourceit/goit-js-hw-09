@@ -1,56 +1,73 @@
+// Розбий завдання на такі підзадачі:
 
-const formState = {
+// 1.Оголоси поза будь-якими функціями об’єкт formState з полями email та message,
+// які спочатку мають порожні рядки як значення: { email: "", message: "" }.
+
+// 2.Використовуй метод делегування для відстеження змін у формі через подію input.
+// Зберігай актуальні дані з полів email та message у formState та записуй цей об’єкт
+//  у локальне сховище. Використовуй ключ "feedback-form-state" для зберігання даних
+// у сховищі.
+
+//3. При завантаженні сторінки перевір, чи є дані у локальному сховищі. Якщо так,
+// використовуй їх для заповнення форми та об'єкта formState. Якщо ні, залиш поля
+// форми порожніми.
+
+// 4.Перед відправленням форми переконайся, що обидва поля форми заповнені. 
+// Якщо будь-яке з полів (властивостей об’єкта formData) порожнє, показуй сповіщення 
+// з текстом «Fill please all fields». Якщо всі поля заповнені, виведи у консоль об’єкт 
+// formState з актуальними значеннями, очисти локальне сховище, об’єкт formState 
+// і поля форми.
+
+
+// Вимоги:
+
+// На живій сторінці відображається форма з двома елементами форми і кнопкою типу submit.
+// Форма стилізована згідно з макетом.
+// На формі прослуховуються події input і submit.
+// При введенні даних у будь-який елемент форми вони записуються у локальне 
+// сховище під ключем "feedback-form-state", збережені дані не містять пробілів по краях.
+// Введення даних в одне поле форми не видаляє дані в сховищі для іншого.
+// При оновленні сторінки дані з локального сховища підставляються в елементи форми, 
+// у полях форми відсутні undefined.
+// При сабміті форми є перевірка, щоб обидва елементи форми були заповнені.
+// Під час сабміту форми, якщо обидва елементи форми заповнені, виводиться у консоль 
+// об'єкт з полями email, message та їхніми поточними значеннями, а також очищаються 
+// сховище і поля форми.
+// Якщо після сабміту форми ввести в будь-який елемент форми дані, то в локальному сховищі 
+// не з'являються дані від попереднього сабміту.
+
+
+let formState = {
     email: "",
     message: "",
+};
+
+const feedbackFormState = localStorage.getItem('feedback-form-state');
+
+if (feedbackFormState) {
+    formState = JSON.parse(feedbackFormState);
 };
 
 const form = document.querySelector('.feedback-form');
 const input = document.querySelector('.feedback-form-input');
 const textarea = document.querySelector('.feedback-form-textarea');
 
-//localStorage.removeItem('feedback-form-state');
-const feedbackFormState = localStorage.getItem('feedback-form-state');
-const currentSettings = JSON.parse(feedbackFormState);
-
-if (feedbackFormState) {
-
-    input.value = currentSettings.email;
-    textarea.value = currentSettings.message;
-};
+input.value = formState.email;
+textarea.value = formState.message;
 
 form.addEventListener('input', (event) => {
-
-    const formData = new FormData(form);
-  
-    const formState = {
-        email: formData.get('email').trim(),
-        message: formData.get('message').trim(),
-    };
-    
-    localStorage.setItem('feedback-form-state', JSON.stringify(formState));
+    formState[event.target.name] = event.target.value;
+    localStorage.setItem('feedback-form-state', JSON.stringify(formState))
 });
 
-
 form.addEventListener('submit', (event) => {
-
     event.preventDefault();
-
-    const formData = new FormData(form);
     
-    const email = formData.get('email').trim();
-    const message = formData.get('message').trim();
-
-    if (email && message) {
-        
-        const formState = {
-            email: email,
-            message: message,
-        };
-        console.log(formState); 
+    if (formState["email"] && formState["message"]) {
+        console.log(formState);
         localStorage.removeItem('feedback-form-state');
+        form.reset();
     } else {
         alert('Fill please all fields');
     }
-    
-    form.reset();
 });
